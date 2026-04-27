@@ -27,6 +27,45 @@
 
 ---
 
+## 下载外部依赖（未包含在仓库中）
+
+由于文件体积过大，以下内容**未上传至 GitHub**，需手动下载后放置到对应路径：
+
+### 1. SIBR Viewer（可视化工具）
+
+从官方 Releases 页面下载预编译的 Windows 版本：
+
+> https://github.com/graphdeco-inria/gaussian-splatting/releases
+
+下载 `viewers.zip`，解压后将 `viewers/` 文件夹放到项目根目录：
+
+```
+gaussian-splatting/
+└── viewers/
+    └── bin/
+        └── SIBR_gaussianViewer_app.exe
+```
+
+### 2. COLMAP（数据预处理工具）
+
+> https://github.com/colmap/colmap/releases
+
+下载 Windows GPU 版本（如 `COLMAP-3.8-windows-cuda.zip`），解压后放到 `tools/` 文件夹，或记住其路径在 `convert.py` 中指定。
+
+### 3. FFmpeg（视频帧提取工具）
+
+> https://www.gyan.dev/ffmpeg/builds/
+
+下载 `ffmpeg-release-essentials.zip`，解压后放到 `tools/` 文件夹，或将 `bin/` 加入系统 PATH。
+
+### 4. 训练数据
+
+将自己拍摄的**视频或照片**放入 `data/input/`，格式要求：
+- 图片：`.jpg` / `.png`，建议 100 张以上，多角度覆盖场景
+- 视频：先用 FFmpeg 提取帧（见下方数据准备章节）
+
+---
+
 ## 环境配置
 
 ### 前置要求
@@ -35,7 +74,7 @@
 - CUDA 11.x（与 PyTorch 1.12 对应）
 - Visual Studio 2019/2022（含 C++ 桌面开发工作负载）
 - Conda（Miniconda 或 Anaconda）
-- COLMAP
+- COLMAP（见上方下载说明）
 
 ### 创建环境
 
@@ -49,10 +88,19 @@ conda activate GS3d
 
 ## 数据准备
 
-将视频帧放入 `data/input/`，然后运行 COLMAP 转换：
+### 从视频提取帧（可选）
 
 ```bash
-python convert.py -s data --colmap_executable "path/to/COLMAP.bat"
+# 用 FFmpeg 每秒提取 2 帧，放入 data/input/
+ffmpeg -i your_video.mp4 -qscale:v 1 -qmin 1 -vf fps=2 data/input/%04d.jpg
+```
+
+### 运行 COLMAP 重建
+
+将图片放入 `data/input/`，然后运行：
+
+```bash
+python convert.py -s data --colmap_executable "tools/COLMAP-3.8-windows-cuda/COLMAP.bat"
 ```
 
 ---
