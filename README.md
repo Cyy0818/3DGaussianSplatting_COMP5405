@@ -33,7 +33,7 @@
 
 ### 1. SIBR Viewer（可视化工具）
 
-从官方 Releases 页面下载预编译的 Windows 版本：
+从官方 项目readme 页面下载预编译的 Windows 版本viewer for windows 解压放入文件夹：
 
 > https://github.com/graphdeco-inria/gaussian-splatting
 
