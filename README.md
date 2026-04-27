@@ -35,9 +35,9 @@
 
 从官方 Releases 页面下载预编译的 Windows 版本：
 
-> https://github.com/graphdeco-inria/gaussian-splatting/releases
+> https://github.com/graphdeco-inria/gaussian-splatting
 
-下载 `viewers.zip`，解压后将 `viewers/` 文件夹放到项目根目录：
+下载 `SIBR Viewer`放到项目根目录：
 
 ```
 gaussian-splatting/
