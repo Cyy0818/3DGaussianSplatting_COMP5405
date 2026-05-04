@@ -17,6 +17,15 @@ namespace cg = cooperative_groups;
 
 __device__ __forceinline__ float sq(float x) { return x * x; }
 
+__device__ float computeFilterVariance(float focal_x, float focal_y, float depth, bool view_consistent_filter, float spectral_filter_s0)
+{
+	if (!view_consistent_filter)
+		return 0.3f;
+	const float focal = 0.5f * (focal_x + focal_y);
+	const float z = max(fabsf(depth), 0.0001f);
+	return max(0.000001f, spectral_filter_s0 * focal * focal / (z * z));
+}
+
 
 // Backward pass for conversion of spherical harmonics to RGB for
 // each Gaussian.
@@ -157,7 +166,9 @@ __global__ void computeCov2DCUDA(int P,
 	const float* dL_dinvdepth,
 	float3* dL_dmeans,
 	float* dL_dcov,
-	bool antialiasing)
+	bool antialiasing,
+	bool view_consistent_filter,
+	float spectral_filter_s0)
 {
 	auto idx = cg::this_grid().thread_rank();
 	if (idx >= P || !(radii[idx] > 0))
@@ -205,7 +216,7 @@ __global__ void computeCov2DCUDA(int P,
 	float c_xy = cov2D[0][1];
 	float c_yy = cov2D[1][1];
 	
-	constexpr float h_var = 0.3f;
+	const float h_var = computeFilterVariance(h_x, h_y, t.z, view_consistent_filter, spectral_filter_s0);
 	float d_inside_root = 0.f;
 	if(antialiasing)
 	{
@@ -663,7 +674,9 @@ void BACKWARD::preprocess(
 	float* dL_dsh,
 	glm::vec3* dL_dscale,
 	glm::vec4* dL_drot,
-	bool antialiasing)
+	bool antialiasing,
+	bool view_consistent_filter,
+	float spectral_filter_s0)
 {
 	// Propagate gradients for the path of 2D conic matrix computation. 
 	// Somewhat long, thus it is its own kernel rather than being part of 
@@ -685,7 +698,9 @@ void BACKWARD::preprocess(
 		dL_dinvdepth,
 		(float3*)dL_dmean3D,
 		dL_dcov3D,
-		antialiasing);
+		antialiasing,
+		view_consistent_filter,
+		spectral_filter_s0);
 
 	// Propagate gradients for remaining steps: finish 3D mean gradients,
 	// propagate color gradients to SH (if desireD), propagate 3D covariance

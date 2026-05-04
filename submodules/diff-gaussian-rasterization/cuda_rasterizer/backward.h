@@ -66,7 +66,9 @@ namespace BACKWARD
 		float* dL_dsh,
 		glm::vec3* dL_dscale,
 		glm::vec4* dL_drot,
-		bool antialiasing);
+		bool antialiasing,
+		bool view_consistent_filter,
+		float spectral_filter_s0);
 }
 
 #endif

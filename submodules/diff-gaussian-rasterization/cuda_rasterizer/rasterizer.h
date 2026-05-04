@@ -51,6 +51,8 @@ namespace CudaRasterizer
 			float* out_color,
 			float* depth,
 			bool antialiasing,
+			bool view_consistent_filter,
+			float spectral_filter_s0,
 			int* radii = nullptr,
 			bool debug = false);
 
@@ -87,6 +89,8 @@ namespace CudaRasterizer
 			float* dL_dscale,
 			float* dL_drot,
 			bool antialiasing,
+			bool view_consistent_filter,
+			float spectral_filter_s0,
 			bool debug);
 	};
 };

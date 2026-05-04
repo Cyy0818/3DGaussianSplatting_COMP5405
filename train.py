@@ -193,6 +193,11 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
                         opt.densify_grad_threshold, 0.005, scene.cameras_extent, size_threshold, radii,
                         use_spectral=opt.use_spectral_densification,
                         spectral_threshold=opt.spectral_densify_threshold,
+                        use_spectral_shape_split=opt.use_spectral_shape_split,
+                        spectral_entropy_threshold=opt.spectral_entropy_threshold,
+                        spectral_delta=opt.spectral_delta,
+                        spectral_k0=opt.spectral_k0,
+                        spectral_split_N=opt.spectral_split_N,
                     )
                 
                 if iteration % opt.opacity_reset_interval == 0 or (dataset.white_background and iteration == opt.densify_from_iter):
@@ -276,6 +281,9 @@ def training_report(tb_writer, iteration, Ll1, loss, l1_loss, elapsed, testing_i
         if tb_writer:
             tb_writer.add_histogram("scene/opacity_histogram", scene.gaussians.get_opacity, iteration)
             tb_writer.add_scalar('total_points', scene.gaussians.get_xyz.shape[0], iteration)
+            spectral_stats = scene.gaussians.get_spectral_statistics()
+            for key, value in spectral_stats.items():
+                tb_writer.add_scalar(f'scene_spectral/{key}', value, iteration)
         torch.cuda.empty_cache()
 
 if __name__ == "__main__":

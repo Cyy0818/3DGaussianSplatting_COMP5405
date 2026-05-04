@@ -2,6 +2,8 @@
 
 > COMP5405 课程项目 | 基于 [3D Gaussian Splatting](https://github.com/graphdeco-inria/gaussian-splatting) 原始代码，融入 Spectral-GS 频谱熵引导优化方法。
 
+> Spectral-GS paper 复现分支说明、训练命令和实验设计见 [`SPECTRAL_GS_REPRODUCTION.md`](SPECTRAL_GS_REPRODUCTION.md) / [`SPECTRAL_GS_REPRODUCTION_ZH.md`](SPECTRAL_GS_REPRODUCTION_ZH.md)。
+
 ## 项目简介
 
 本项目在标准 3D 高斯泼溅（3DGS）框架基础上，参考论文  
@@ -78,7 +80,7 @@ gaussian-splatting/
 
 ### 创建环境
 
-```bash
+```sh
 # 创建名为 GS3d 的 conda 环境
 conda env create --file environment.yml --name GS3d
 conda activate GS3d
@@ -90,7 +92,7 @@ conda activate GS3d
 
 ### 从视频提取帧（可选）
 
-```bash
+```sh
 # 用 FFmpeg 每秒提取 2 帧，放入 data/input/
 ffmpeg -i your_video.mp4 -qscale:v 1 -qmin 1 -vf fps=2 data/input/%04d.jpg
 ```
@@ -99,7 +101,7 @@ ffmpeg -i your_video.mp4 -qscale:v 1 -qmin 1 -vf fps=2 data/input/%04d.jpg
 
 将图片放入 `data/input/`，然后运行：
 
-```bash
+```sh
 python convert.py -s data --colmap_executable "tools/COLMAP-3.8-windows-cuda/COLMAP.bat"
 ```
 
@@ -109,13 +111,13 @@ python convert.py -s data --colmap_executable "tools/COLMAP-3.8-windows-cuda/COL
 
 ### 标准 3DGS 训练（原版）
 
-```bash
+```sh
 python train.py -s data -m data/output
 ```
 
 ### Spectral-GS 训练（改进版）
 
-```bash
+```sh
 python train.py -s data -m data/output_spectral --use_spectral_loss --use_spectral_densification
 ```
 
@@ -135,7 +137,7 @@ python train.py -s data -m data/output_spectral --use_spectral_loss --use_spectr
 
 ## 渲染与评估
 
-```bash
+```sh
 # 渲染图片
 python render.py -m data/output --eval
 python render.py -m data/output_spectral --eval

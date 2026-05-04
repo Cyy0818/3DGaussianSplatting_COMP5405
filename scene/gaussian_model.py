@@ -21,6 +21,11 @@ from utils.sh_utils import RGB2SH
 from simple_knn._C import distCUDA2
 from utils.graphics_utils import BasicPointCloud
 from utils.general_utils import strip_symmetric, build_scaling_rotation
+from utils.spectral_utils import (
+    condition_number_from_scaling,
+    spectral_entropy_from_scaling,
+    spectral_radius_from_scaling,
+)
 
 try:
     from diff_gaussian_rasterization import SparseGaussianAdam
@@ -149,6 +154,33 @@ class GaussianModel:
     
     def get_covariance(self, scaling_modifier = 1):
         return self.covariance_activation(self.get_scaling, scaling_modifier, self._rotation)
+
+    def get_spectral_statistics(self):
+        if self.get_xyz.shape[0] == 0:
+            return {
+                "entropy_mean": 0.0,
+                "entropy_median": 0.0,
+                "entropy_min": 0.0,
+                "low_entropy_ratio": 0.0,
+                "condition_mean": 0.0,
+                "condition_max": 0.0,
+                "spectral_radius_mean": 0.0,
+            }
+
+        with torch.no_grad():
+            scaling = self.get_scaling.detach()
+            entropy = spectral_entropy_from_scaling(scaling)
+            condition = condition_number_from_scaling(scaling)
+            radius = spectral_radius_from_scaling(scaling)
+            return {
+                "entropy_mean": entropy.mean().item(),
+                "entropy_median": entropy.median().item(),
+                "entropy_min": entropy.min().item(),
+                "low_entropy_ratio": (entropy < 0.5).float().mean().item(),
+                "condition_mean": condition.mean().item(),
+                "condition_max": condition.max().item(),
+                "spectral_radius_mean": radius.mean().item(),
+            }
 
     def oneupSHdegree(self):
         if self.active_sh_degree < self.max_sh_degree:
@@ -420,21 +452,40 @@ class GaussianModel:
         self.spectral_score_accum = torch.zeros((self.get_xyz.shape[0], 1), device="cuda")
         self.spectral_denom = torch.zeros((self.get_xyz.shape[0], 1), device="cuda")
 
-    def densify_and_split(self, grads, grad_threshold, scene_extent, N=2):
+    def densify_and_split(self, grads, grad_threshold, scene_extent, N=2,
+                          spectral_split_mask=None, spectral_delta=0.6, spectral_k0=1.0):
         n_init_points = self.get_xyz.shape[0]
         # Extract points that satisfy the gradient condition
         padded_grad = torch.zeros((n_init_points), device="cuda")
         padded_grad[:grads.shape[0]] = grads.squeeze()
         selected_pts_mask = torch.where(padded_grad >= grad_threshold, True, False)
+        if spectral_split_mask is not None:
+            padded_spectral_mask = torch.zeros((n_init_points), device="cuda", dtype=bool)
+            padded_spectral_mask[:spectral_split_mask.shape[0]] = spectral_split_mask.squeeze()
+            selected_pts_mask = torch.logical_or(selected_pts_mask, padded_spectral_mask)
+        else:
+            padded_spectral_mask = torch.zeros((n_init_points), device="cuda", dtype=bool)
         selected_pts_mask = torch.logical_and(selected_pts_mask,
                                               torch.max(self.get_scaling, dim=1).values > self.percent_dense*scene_extent)
+        selected_spectral_mask = padded_spectral_mask[selected_pts_mask]
 
         stds = self.get_scaling[selected_pts_mask].repeat(N,1)
         means =torch.zeros((stds.size(0), 3),device="cuda")
         samples = torch.normal(mean=means, std=stds)
         rots = build_rotation(self._rotation[selected_pts_mask]).repeat(N,1,1)
         new_xyz = torch.bmm(rots, samples.unsqueeze(-1)).squeeze(-1) + self.get_xyz[selected_pts_mask].repeat(N, 1)
-        new_scaling = self.scaling_inverse_activation(self.get_scaling[selected_pts_mask].repeat(N,1) / (0.8*N))
+
+        selected_scaling = self.get_scaling[selected_pts_mask]
+        baseline_scaling = selected_scaling / (0.8 * N)
+        if selected_spectral_mask.numel() > 0 and selected_spectral_mask.any():
+            spectral_divisor = torch.ones_like(selected_scaling) * spectral_k0
+            dominant_axis = torch.argmax(selected_scaling ** 2, dim=1, keepdim=True)
+            spectral_divisor.scatter_(1, dominant_axis, spectral_k0 + spectral_delta)
+            spectral_scaling = selected_scaling / spectral_divisor.clamp_min(1e-6)
+            mixed_scaling = torch.where(selected_spectral_mask[:, None], spectral_scaling, baseline_scaling)
+        else:
+            mixed_scaling = baseline_scaling
+        new_scaling = self.scaling_inverse_activation(mixed_scaling.repeat(N,1))
         new_rotation = self._rotation[selected_pts_mask].repeat(N,1)
         new_features_dc = self._features_dc[selected_pts_mask].repeat(N,1,1)
         new_features_rest = self._features_rest[selected_pts_mask].repeat(N,1,1)
@@ -464,12 +515,20 @@ class GaussianModel:
         self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_opacities, new_scaling, new_rotation, new_tmp_radii)
 
     def densify_and_prune(self, max_grad, min_opacity, extent, max_screen_size, radii,
-                          use_spectral=False, spectral_threshold=0.5):
+                          use_spectral=False, spectral_threshold=0.5,
+                          use_spectral_shape_split=False, spectral_entropy_threshold=0.5,
+                          spectral_delta=0.6, spectral_k0=1.0, spectral_split_N=2):
         grads = self.xyz_gradient_accum / self.denom
         grads[grads.isnan()] = 0.0
 
+        spectral_split_mask = None
+        if use_spectral_shape_split and self.get_xyz.shape[0] > 0:
+            with torch.no_grad():
+                entropy = spectral_entropy_from_scaling(self.get_scaling)
+                spectral_split_mask = (entropy.squeeze(-1) < spectral_entropy_threshold)
+
         # Spectral-GS: boost gradients for Gaussians in frequency-mismatched regions
-        if use_spectral and self.spectral_denom.sum() > 0:
+        if use_spectral and not use_spectral_shape_split and self.spectral_denom.sum() > 0:
             spectral_scores = self.spectral_score_accum / (self.spectral_denom + 1e-6)
             spectral_scores[self.spectral_denom.squeeze() == 0] = 0.0
             s_max = spectral_scores.max()
@@ -483,7 +542,12 @@ class GaussianModel:
 
         self.tmp_radii = radii
         self.densify_and_clone(grads, max_grad, extent)
-        self.densify_and_split(grads, max_grad, extent)
+        self.densify_and_split(
+            grads, max_grad, extent, N=spectral_split_N,
+            spectral_split_mask=spectral_split_mask,
+            spectral_delta=spectral_delta,
+            spectral_k0=spectral_k0,
+        )
 
         prune_mask = (self.get_opacity < min_opacity).squeeze()
         if max_screen_size:

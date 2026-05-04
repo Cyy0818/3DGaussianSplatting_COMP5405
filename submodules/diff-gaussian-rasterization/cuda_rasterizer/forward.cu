@@ -108,6 +108,15 @@ __device__ float3 computeCov2D(const float3& mean, float focal_x, float focal_y,
 	return { float(cov[0][0]), float(cov[0][1]), float(cov[1][1]) };
 }
 
+__device__ float computeFilterVariance(float focal_x, float focal_y, float depth, bool view_consistent_filter, float spectral_filter_s0)
+{
+	if (!view_consistent_filter)
+		return 0.3f;
+	const float focal = 0.5f * (focal_x + focal_y);
+	const float z = max(fabsf(depth), 0.0001f);
+	return max(0.000001f, spectral_filter_s0 * focal * focal / (z * z));
+}
+
 // Forward method for converting scale and rotation properties of each
 // Gaussian to a 3D covariance matrix in world space. Also takes care
 // of quaternion normalization.
@@ -174,7 +183,9 @@ __global__ void preprocessCUDA(int P, int D, int M,
 	const dim3 grid,
 	uint32_t* tiles_touched,
 	bool prefiltered,
-	bool antialiasing)
+	bool antialiasing,
+	bool view_consistent_filter,
+	float spectral_filter_s0)
 {
 	auto idx = cg::this_grid().thread_rank();
 	if (idx >= P)
@@ -212,7 +223,7 @@ __global__ void preprocessCUDA(int P, int D, int M,
 	// Compute 2D screen-space covariance matrix
 	float3 cov = computeCov2D(p_orig, focal_x, focal_y, tan_fovx, tan_fovy, cov3D, viewmatrix);
 
-	constexpr float h_var = 0.3f;
+	const float h_var = computeFilterVariance(focal_x, focal_y, p_view.z, view_consistent_filter, spectral_filter_s0);
 	const float det_cov = cov.x * cov.z - cov.y * cov.y;
 	cov.x += h_var;
 	cov.z += h_var;
@@ -451,7 +462,9 @@ void FORWARD::preprocess(int P, int D, int M,
 	const dim3 grid,
 	uint32_t* tiles_touched,
 	bool prefiltered,
-	bool antialiasing)
+	bool antialiasing,
+	bool view_consistent_filter,
+	float spectral_filter_s0)
 {
 	preprocessCUDA<NUM_CHANNELS> << <(P + 255) / 256, 256 >> > (
 		P, D, M,
@@ -479,6 +492,8 @@ void FORWARD::preprocess(int P, int D, int M,
 		grid,
 		tiles_touched,
 		prefiltered,
-		antialiasing
+		antialiasing,
+		view_consistent_filter,
+		spectral_filter_s0
 		);
 }

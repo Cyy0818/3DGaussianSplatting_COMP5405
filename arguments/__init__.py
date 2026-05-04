@@ -69,6 +69,8 @@ class PipelineParams(ParamGroup):
         self.compute_cov3D_python = False
         self.debug = False
         self.antialiasing = False
+        self.use_view_consistent_filter = False
+        self.spectral_filter_s0 = 0.1
         super().__init__(parser, "Pipeline Parameters")
 
 class OptimizationParams(ParamGroup):
@@ -106,6 +108,12 @@ class OptimizationParams(ParamGroup):
         self.spectral_densify_threshold = 0.5
         self.spectral_patch_size = 16
         self.spectral_patch_stride = 8
+        # Spectral-GS paper reproduction: covariance entropy shape-aware split
+        self.use_spectral_shape_split = False
+        self.spectral_entropy_threshold = 0.5
+        self.spectral_delta = 0.6
+        self.spectral_k0 = 1.0
+        self.spectral_split_N = 2
         super().__init__(parser, "Optimization Parameters")
 
 def get_combined_args(parser : ArgumentParser):

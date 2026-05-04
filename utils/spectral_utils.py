@@ -7,6 +7,43 @@ import torch
 import torch.nn.functional as F
 
 
+def _covariance_eigenvalues_from_scaling(scaling: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    """Return covariance eigenvalues for 3DGS scale parameters.
+
+    In 3DGS, Sigma = R S S^T R^T, so the covariance eigenvalues are scale^2.
+    """
+    if scaling.numel() == 0:
+        return scaling
+    return torch.clamp(scaling, min=eps) ** 2
+
+
+def spectral_entropy_from_scaling(scaling: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    """Per-Gaussian spectral entropy of the 3D covariance matrix.
+
+    Args:
+        scaling: Activated Gaussian scales with shape (N, 3).
+
+    Returns:
+        Tensor with shape (N, 1).
+    """
+    eigvals = _covariance_eigenvalues_from_scaling(scaling, eps)
+    probs = eigvals / (eigvals.sum(dim=-1, keepdim=True) + eps)
+    entropy = -(probs * torch.log(probs + eps)).sum(dim=-1, keepdim=True)
+    return entropy
+
+
+def condition_number_from_scaling(scaling: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    """Per-Gaussian covariance condition number from activated scales."""
+    eigvals = _covariance_eigenvalues_from_scaling(scaling, eps)
+    return eigvals.max(dim=-1, keepdim=True).values / (eigvals.min(dim=-1, keepdim=True).values + eps)
+
+
+def spectral_radius_from_scaling(scaling: torch.Tensor, eps: float = 1e-12) -> torch.Tensor:
+    """Per-Gaussian spectral radius of the covariance matrix."""
+    eigvals = _covariance_eigenvalues_from_scaling(scaling, eps)
+    return eigvals.max(dim=-1, keepdim=True).values
+
+
 def _dct_1d(x: torch.Tensor) -> torch.Tensor:
     """1D DCT-II along the last dimension (differentiable via torch.fft)."""
     N = x.shape[-1]

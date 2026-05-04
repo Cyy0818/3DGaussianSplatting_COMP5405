@@ -218,6 +218,8 @@ int CudaRasterizer::Rasterizer::forward(
 	float* out_color,
 	float* depth,
 	bool antialiasing,
+	bool view_consistent_filter,
+	float spectral_filter_s0,
 	int* radii,
 	bool debug)
 {
@@ -272,7 +274,9 @@ int CudaRasterizer::Rasterizer::forward(
 		tile_grid,
 		geomState.tiles_touched,
 		prefiltered,
-		antialiasing
+		antialiasing,
+		view_consistent_filter,
+		spectral_filter_s0
 	), debug)
 
 	// Compute prefix sum over full list of touched tile counts by Gaussians
@@ -375,6 +379,8 @@ void CudaRasterizer::Rasterizer::backward(
 	float* dL_dscale,
 	float* dL_drot,
 	bool antialiasing,
+	bool view_consistent_filter,
+	float spectral_filter_s0,
 	bool debug)
 {
 	GeometryState geomState = GeometryState::fromChunk(geom_buffer, P);
@@ -446,5 +452,7 @@ void CudaRasterizer::Rasterizer::backward(
 		dL_dsh,
 		(glm::vec3*)dL_dscale,
 		(glm::vec4*)dL_drot,
-		antialiasing), debug);
+		antialiasing,
+		view_consistent_filter,
+		spectral_filter_s0), debug);
 }
