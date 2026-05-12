@@ -108,7 +108,7 @@ __device__ float3 computeCov2D(const float3& mean, float focal_x, float focal_y,
 	return { float(cov[0][0]), float(cov[0][1]), float(cov[1][1]) };
 }
 
-__device__ float computeFilterVariance(float focal_x, float focal_y, float depth, bool view_consistent_filter, float spectral_filter_s0)
+static __device__ __forceinline__ float computeFilterVariance(float focal_x, float focal_y, float depth, bool view_consistent_filter, float spectral_filter_s0)
 {
 	if (!view_consistent_filter)
 		return 0.3f;

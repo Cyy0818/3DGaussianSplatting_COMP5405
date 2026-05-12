@@ -1,0 +1,268 @@
+﻿
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>SET DISTUTILS_USE_SDK=1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>SET MSSdk=1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>SET "VS_VERSION=17.0" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>SET "VS_MAJOR=17" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>SET "VS_YEAR=2022" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "MSYS2_ARG_CONV_EXCL=/AI;/AL;/OUT;/out" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "MSYS2_ENV_CONV_EXCL=CL" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "PY_VCRUNTIME_REDIST=\bin\vcruntime140.dll" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "CXX=cl.exe" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "CC=cl.exe" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "VSINSTALLDIR=" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "NEWER_VS_WITH_OLDER_VC=0" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>for /F "usebackq tokens=*" %i in (`vswhere.exe -nologo -products * -version [17.0,18.0) -property installationPath`) do (set "VSINSTALLDIR=%i\" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>(set "VSINSTALLDIR=C:\Program Files\Microsoft Visual Studio\2022\Community\" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if not exist "C:\Program Files\Microsoft Visual Studio\2022\Community\" (for /F "usebackq tokens=*" %i in (`vswhere.exe -nologo -products * -requires Microsoft.VisualStudio.ComponentGroup.VC.Tools.143.x86.x64 -property installationPath`) do (
+set "VSINSTALLDIR=%i\"  
+ set "NEWER_VS_WITH_OLDER_VC=1" 
+) ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if not exist "C:\Program Files\Microsoft Visual Studio\2022\Community\" (for /F "usebackq tokens=*" %i in (`vswhere.exe -nologo -products * -requires Microsoft.VisualStudio.Component.VC.v143.x86.x64 -property installationPath`) do (
+set "VSINSTALLDIR=%i\"  
+ set "NEWER_VS_WITH_OLDER_VC=1" 
+) ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if not exist "C:\Program Files\Microsoft Visual Studio\2022\Community\" (set "VSINSTALLDIR=C:\Program Files (x86)\Microsoft Visual Studio\2022\Professional\" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if not exist "C:\Program Files\Microsoft Visual Studio\2022\Community\" (set "VSINSTALLDIR=C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if not exist "C:\Program Files\Microsoft Visual Studio\2022\Community\" (set "VSINSTALLDIR=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if not exist "C:\Program Files\Microsoft Visual Studio\2022\Community\" (set "VSINSTALLDIR=C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>IF NOT "" == "" (
+set "INCLUDE=;"  
+ set "LIB=;"  
+ set "CMAKE_PREFIX_PATH=;" 
+)  else (
+set "INCLUDE=C:\Users\CYY\.conda\envs\GS3d\Library\include;"  
+ set "LIB=C:\Users\CYY\.conda\envs\GS3d\Library\lib;"  
+ set "CMAKE_PREFIX_PATH=C:\Users\CYY\.conda\envs\GS3d\Library;" 
+) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>call :GetWin10SdkDir 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>call :GetWin10SdkDirHelper HKLM\SOFTWARE\Wow6432Node  1>nul 2>&1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if errorlevel 1 call :GetWin10SdkDirHelper HKCU\SOFTWARE\Wow6432Node  1>nul 2>&1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if errorlevel 1 call :GetWin10SdkDirHelper HKLM\SOFTWARE  1>nul 2>&1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if errorlevel 1 call :GetWin10SdkDirHelper HKCU\SOFTWARE  1>nul 2>&1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if errorlevel 1 exit /B 1 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>exit /B 0 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>for /F %i in ('dir /ON /B "C:\Program Files (x86)\Windows Kits\10\\include\10.*"') DO (SET WindowsSDKVer=%~i ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>(SET WindowsSDKVer=10.0.22000.0 ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>(SET WindowsSDKVer=10.0.22621.0 ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>(SET WindowsSDKVer=10.0.26100.0 ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if errorlevel 1 (echo "Didn't find any windows 10 SDK. I'm not sure if things will work, but let's try..." )  else (echo Windows SDK version found as: "10.0.26100.0" ) 
+Windows SDK version found as: "10.0.26100.0"
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "CMAKE_PLAT=x64" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "VCVARSBAT=64" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>IF "" == "1" (set "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX= -DPython_FIND_REGISTRY=NEVER -DPython3_FIND_REGISTRY=NEVER -DCMAKE_PROGRAM_PATH=\bin;\Scripts;\Library\bin;\bin;\Scripts;\Library\bin" ) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>IF 2022 GEQ 2019 (
+set "CMAKE_GEN=Visual Studio 17 2022"  
+ set "USE_NEW_CMAKE_GEN_SYNTAX=1" 
+)  ELSE (
+IF "win-64" == "win-64" (set "CMAKE_GEN=Visual Studio 17 2022 Win64" )  else (set "CMAKE_GEN=Visual Studio 17 2022" )  
+ set "USE_NEW_CMAKE_GEN_SYNTAX=0" 
+) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>echo "NEWER_VS_WITH_OLDER_VC=0" 
+"NEWER_VS_WITH_OLDER_VC=0"
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>set /p LATEST_VS= 0<"C:\Program Files\Microsoft Visual Studio\2022\Community\\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>type "C:\Program Files\Microsoft Visual Studio\2022\Community\\VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt" 
+14.44.35207
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>dir "C:\Program Files\Microsoft Visual Studio\2022\Community\\VC\Redist\MSVC\" 
+ Volume in drive C has no label.
+ Volume Serial Number is 08C0-3B1B
+
+ Directory of C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC
+
+04/03/2026  09:45 PM    <DIR>          .
+04/03/2026  09:44 PM    <DIR>          ..
+04/03/2026  09:45 PM    <DIR>          14.44.35112
+04/03/2026  09:45 PM    <DIR>          v143
+               0 File(s)              0 bytes
+               4 Dir(s)   8,921,600,000 bytes free
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>if "0" == "1" (
+echo "14.44.35207"  
+ if "14.4" == "14.2" (set "CMAKE_GEN=Visual Studio 16 2019" )  else (set "CMAKE_GEN=Visual Studio 17 2022" )  
+ set "USE_NEW_CMAKE_GEN_SYNTAX=1" 
+) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>IF "" == "" SET "CMAKE_GENERATOR=Visual Studio 17 2022" 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>IF "1" == "1" (
+IF "" == "" SET "CMAKE_GENERATOR_PLATFORM=x64"  
+ IF "" == "" SET "CMAKE_GENERATOR_TOOLSET=v143" 
+) 
+
+(GS3d) D:\VS Project\DMP\GroupWork\gaussian-splatting>pushd C:\Program Files\Microsoft Visual Studio\2022\Community\ 
+
+(GS3d) C:\Program Files\Microsoft Visual Studio\2022\Community>if "14.44" LSS "14.44" (
+ 
+ CALL "VC\Auxiliary\Build\vcvars64.bat" -vcvars_ver=14.44 10.0.26100.0 
+)  else (CALL "VC\Auxiliary\Build\vcvars64.bat" -vcvars_ver=14.44 10.0.26100.0 ) 
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.14.29
+** Copyright (c) 2025 Microsoft Corporation
+**********************************************************************
+[vcvarsall.bat] Environment initialized for: 'x64'
+C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\rc.exe
+Using pip 24.2 from C:\Users\CYY\.conda\envs\GS3d\lib\site-packages\pip (python 3.8)
+Obtaining file:///D:/VS%20Project/DMP/GroupWork/gaussian-splatting/submodules/diff-gaussian-rasterization
+  Preparing metadata (setup.py): started
+cmd :   Running command python setup.py egg_info
+At line:1 char:1
++ cmd /c 'call C:\ProgramData\anaconda3\Scripts\activate.bat GS3d && se ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  Running comma...tup.py egg_info:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  running egg_info
+  creating C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info
+  writing C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info\PKG-INFO
+  writing dependency_links to 
+C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info\dependency_links.txt
+  writing top-level names to 
+C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info\top_level.txt
+  writing manifest file 
+'C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info\SOURCES.txt'
+  reading manifest file 
+'C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info\SOURCES.txt'
+  adding license file 'LICENSE.md'
+  writing manifest file 
+'C:\Users\CYY\AppData\Local\Temp\pip-pip-egg-info-esl95euw\diff_gaussian_rasterization.egg-info\SOURCES.txt'
+  Preparing metadata (setup.py): finished with status 'done'
+Installing collected packages: diff_gaussian_rasterization
+  Attempting uninstall: diff_gaussian_rasterization
+    Found existing installation: diff_gaussian_rasterization 0.0.0
+    Uninstalling diff_gaussian_rasterization-0.0.0:
+      Removing file or directory c:\users\cyy\.conda\envs\gs3d\lib\site-packages\diff_gaussian_rasterization-0.0.0.dist-info\
+      Removing file or directory c:\users\cyy\.conda\envs\gs3d\lib\site-packages\diff_gaussian_rasterization\
+      Successfully uninstalled diff_gaussian_rasterization-0.0.0
+  DEPRECATION: Legacy editable install of diff_gaussian_rasterization==0.0.0 from 
+file:///D:/VS%20Project/DMP/GroupWork/gaussian-splatting/submodules/diff-gaussian-rasterization (setup.py develop) is 
+deprecated. pip 25.0 will enforce this behaviour change. A possible replacement is to add a pyproject.toml or enable 
+--use-pep517, and use setuptools >= 64. If the resulting installation is not behaving as expected, try using 
+--config-settings editable_mode=compat. Please consult the setuptools documentation for more information. Discussion 
+can be found at https://github.com/pypa/pip/issues/11457
+  Running setup.py develop for diff_gaussian_rasterization
+    Running command python setup.py develop
+    running develop
+    running egg_info
+    writing diff_gaussian_rasterization.egg-info\PKG-INFO
+    writing dependency_links to diff_gaussian_rasterization.egg-info\dependency_links.txt
+    writing top-level names to diff_gaussian_rasterization.egg-info\top_level.txt
+    reading manifest file 'diff_gaussian_rasterization.egg-info\SOURCES.txt'
+    adding license file 'LICENSE.md'
+    writing manifest file 'diff_gaussian_rasterization.egg-info\SOURCES.txt'
+    running build_ext
+    building 'diff_gaussian_rasterization._C' extension
+    C:\Users\CYY\.conda\envs\GS3d\lib\site-packages\setuptools\command\develop.py:41: EasyInstallDeprecationWarning: 
+easy_install command is deprecated.
+    !!
+
+            ********************************************************************************
+            Please avoid running ``setup.py`` and ``easy_install``.
+            Instead, use pypa/build, pypa/installer or other
+            standards-based tools.
+
+            See https://github.com/pypa/setuptools/issues/917 for details.
+            ********************************************************************************
+
+    !!
+      easy_install.initialize_options(self)
+    C:\Users\CYY\.conda\envs\GS3d\lib\site-packages\setuptools\_distutils\cmd.py:66: SetuptoolsDeprecationWarning: 
+setup.py install is deprecated.
+    !!
+
+            ********************************************************************************
+            Please avoid running ``setup.py`` directly.
+            Instead, use pypa/build, pypa/installer or other
+            standards-based tools.
+
+            See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+            ********************************************************************************
+
+    !!
+      self.initialize_options()
+    C:\Users\CYY\.conda\envs\GS3d\lib\site-packages\torch\utils\cpp_extension.py:380: UserWarning: Error checking 
+compiler version for cl.exe: 'cp1' codec can't decode bytes in position 0--1: No mapping for the Unicode character 
+exists in the target code page.
+      warnings.warn(f'Error checking compiler version for {compiler}: {error}')
+    C:\Users\CYY\.conda\envs\GS3d\lib\site-packages\torch\utils\cpp_extension.py:1965: UserWarning: 
+TORCH_CUDA_ARCH_LIST is not set, all archs for visible cards are included for compilation.
+    If this is not desired, please set os.environ['TORCH_CUDA_ARCH_LIST'].
+      warnings.warn(
+    Emitting ninja build file D:\VS Project\DMP\GroupWork\gaussian-splatting\submodules\diff-gaussian-rasterization\bui
+ld\temp.win-amd64-cpython-38\Release\build.ninja...
+    Compiling objects...
+    Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+    ninja: no work to do.
+    "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\link.exe" 
+/nologo /INCREMENTAL:NO /LTCG /DLL /MANIFEST:EMBED,ID=2 /MANIFESTUAC:NO 
+/LIBPATH:C:\Users\CYY\.conda\envs\GS3d\lib\site-packages\torch\lib "/LIBPATH:C:\Program Files\NVIDIA GPU Computing 
+Toolkit\CUDA\v12.4\lib\x64" /LIBPATH:C:\Users\CYY\.conda\envs\GS3d\libs /LIBPATH:C:\Users\CYY\.conda\envs\GS3d 
+/LIBPATH:C:\Users\CYY\.conda\envs\GS3d\PCbuild\amd64 "/LIBPATH:C:\Program Files\Microsoft Visual 
+Studio\2022\Community\VC\Tools\MSVC\14.44.35207\ATLMFC\lib\x64" "/LIBPATH:C:\Program Files\Microsoft Visual 
+Studio\2022\Community\VC\Tools\MSVC\14.44.35207\lib\x64" "/LIBPATH:C:\Program Files (x86)\Windows 
+Kits\NETFXSDK\4.8\lib\um\x64" "/LIBPATH:C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64" 
+"/LIBPATH:C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64" 
+/LIBPATH:C:\Users\CYY\.conda\envs\GS3d\Library\lib c10.lib torch.lib torch_cpu.lib torch_python.lib cudart.lib 
+c10_cuda.lib torch_cuda.lib /EXPORT:PyInit__C "D:\VS Project\DMP\GroupWork\gaussian-splatting\submodules\diff-gaussian-
+rasterization\build\temp.win-amd64-cpython-38\Release\cuda_rasterizer/backward.obj" "D:\VS Project\DMP\GroupWork\gaussi
+an-splatting\submodules\diff-gaussian-rasterization\build\temp.win-amd64-cpython-38\Release\cuda_rasterizer/forward.obj
+" "D:\VS Project\DMP\GroupWork\gaussian-splatting\submodules\diff-gaussian-rasterization\build\temp.win-amd64-cpython-3
+8\Release\cuda_rasterizer/rasterizer_impl.obj" "D:\VS Project\DMP\GroupWork\gaussian-splatting\submodules\diff-gaussian
+-rasterization\build\temp.win-amd64-cpython-38\Release\ext.obj" "D:\VS Project\DMP\GroupWork\gaussian-splatting\submodu
+les\diff-gaussian-rasterization\build\temp.win-amd64-cpython-38\Release\rasterize_points.obj" 
+/OUT:build\lib.win-amd64-cpython-38\diff_gaussian_rasterization\_C.cp38-win_amd64.pyd "/IMPLIB:D:\VS Project\DMP\GroupW
+ork\gaussian-splatting\submodules\diff-gaussian-rasterization\build\temp.win-amd64-cpython-38\Release\cuda_rasterizer\_
+C.cp38-win_amd64.lib"
+      正在创建�\x93 D:\VS Project\DMP\GroupWork\gaussian-splatting\submodules\diff-gaussian-rasterization\build\temp.win-am
+d64-cpython-38\Release\cuda_rasterizer\_C.cp38-win_amd64.lib 和�\xaf�象 D:\VS Project\DMP\GroupWork\gaussian-splatting\su
+bmodules\diff-gaussian-rasterization\build\temp.win-amd64-cpython-38\Release\cuda_rasterizer\_C.cp38-win_amd64.exp
+    正在生成代码
+    已完成代码的生成
+    copying build\lib.win-amd64-cpython-38\diff_gaussian_rasterization\_C.cp38-win_amd64.pyd -> 
+diff_gaussian_rasterization
+    Creating c:\users\cyy\.conda\envs\gs3d\lib\site-packages\diff-gaussian-rasterization.egg-link (link to .)
+    Adding diff-gaussian-rasterization 0.0.0 to easy-install.pth file
+
+    Installed d:\vs project\dmp\groupwork\gaussian-splatting\submodules\diff-gaussian-rasterization
+Successfully installed diff_gaussian_rasterization
+

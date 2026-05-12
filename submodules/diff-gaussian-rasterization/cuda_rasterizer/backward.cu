@@ -17,7 +17,7 @@ namespace cg = cooperative_groups;
 
 __device__ __forceinline__ float sq(float x) { return x * x; }
 
-__device__ float computeFilterVariance(float focal_x, float focal_y, float depth, bool view_consistent_filter, float spectral_filter_s0)
+static __device__ __forceinline__ float computeFilterVariance(float focal_x, float focal_y, float depth, bool view_consistent_filter, float spectral_filter_s0)
 {
 	if (!view_consistent_filter)
 		return 0.3f;
