@@ -1,0 +1,112 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlist[itemize]{leftmargin=1.2em, itemsep=2pt, topsep=2pt}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+\begin{document}
+
+\begin{center}
+{\Large \textbf{AI Usage Record}}\\[4pt]
+{\large COMP5405/4405 Digital Media Computing Project}\\[4pt]
+\textbf{Project:} Spectral-GS Reproduction for Zoom-Robust 3D Gaussian Splatting\\[4pt]
+\textbf{Group members:} 530182911 / yliu7029, 540433784 / sili0968, 550294609 / yche0218
+\end{center}
+
+\section*{Purpose}
+
+This supplementary document records the key uses of AI tools during the final stage of the project. It is not a full transcript of every interaction. Instead, it summarizes the important prompts, outputs, and human checks that affected the code, experiments, figures, and final report. This follows the assignment requirement to provide a record of key progress or changes when AI tools are used for tasks such as coding and report writing.
+
+\section*{AI Tools Used}
+
+The team used OpenAI Codex/ChatGPT as an engineering assistant. The AI system was used for codebase inspection, implementation planning, report drafting, LaTeX editing, figure construction, and verification checklists. The AI output was treated as advice and draft material, not as automatically correct final work.
+
+\section*{Key Usage Log}
+
+\small
+\begin{tabularx}{\textwidth}{p{0.17\textwidth}Y Y Y}
+\toprule
+\textbf{Stage} & \textbf{Prompt or Request Summary} & \textbf{AI Assistance or Output} & \textbf{Human Verification and Final Decision} \\
+\midrule
+Project gap analysis &
+Read the project folder and compare the existing implementation with the assignment description, proposal, and the target paper \emph{Spectral-GS: Taming 3D Gaussian Splatting with Spectral Entropy}. &
+Identified that the inherited repository mainly had an image/DCT-inspired spectral path, while the paper's core mechanisms were covariance spectral entropy based 3D splitting and 2D view-consistent filtering. &
+The team checked the local paper PDF and the source files. The report explicitly separates old DCT-inspired code from the reproduced Spectral-GS path. \\
+\midrule
+Implementation planning &
+Plan how to implement a fuller reproduction of Spectral-GS on a new branch and document what remains missing. &
+Produced a plan covering a new branch, covariance spectral metrics, shape-aware split, anisotropic scale shrink, scalar view-consistent filter, zoom rendering, metric export, and reproduction README files. &
+The team accepted the plan but kept the implementation scoped to course-project feasibility. The full matrix filter and full paper-scale benchmark were marked as limitations. \\
+\midrule
+Code implementation support &
+Implement the reproduction plan in the repository while preserving the 3D-GS baseline behavior when new flags are disabled. &
+Assisted with edits to add spectral covariance utilities, low-entropy split triggers, anisotropic shrink, rasterizer parameters, scalar filter variance $s=s_0f^2/z^2$, zoom rendering, and metrics export. &
+The team reviewed source changes, preserved baseline flags, and ran experiments separately. Python syntax checks and source inspection were used before reporting results. \\
+\midrule
+Report results integration &
+Use the available result images and CSV files to improve the final report with GT, baseline, split-only, and full Spectral-GS comparisons. &
+Drafted quantitative tables for PSNR, SSIM, LPIPS, and EntropyMean; added qualitative zoom 4x figures for \texttt{playroom} and \texttt{truck}; and wrote discussion of split-only and full settings. &
+The reported numbers came from the team-provided result files, not from AI generation. The team organized GT and rendered images before they were inserted into the report. \\
+\midrule
+Methodology figure editing &
+Revise the methodology figure so that implemented, approximated, and not fully implemented components are clear and use mathematical notation from the paper/report. &
+Generated a methodology figure adapted from Spectral-GS Figure 5 with three formula boxes: implemented 3D split objectives, implemented scalar 2D approximation, and not fully implemented full matrix filter. &
+The team requested multiple corrections to make the formula notation match the original mechanism figure and to clarify that the orange scalar formula substitutes for the gray full matrix formula. \\
+\midrule
+LaTeX report editing &
+Improve the final report according to the rubric and assignment: explain GT, metrics, limitations, and AI usage. &
+Edited LaTeX text to explain PSNR, SSIM, LPIPS, EntropyMean, GT, the view-consistency target equations, and the difference between scalar and full matrix filtering. &
+The team reviewed the wording and asked for revisions when statements were unclear. The final PDF was recompiled and visually checked after each meaningful report/figure change. \\
+\midrule
+Repository and teammate update check &
+Pull the teammate's latest branch and check whether method code changed or only environment/build files changed. &
+Compared the remote commit and identified that the algorithmic formula did not change; only CUDA helper linkage/inlining changed, while build logs and a Windows binary artifact were also added. &
+The team decided to keep the useful CUDA source fix but not treat build artifacts as part of the method. Cleanup guidance was provided separately. \\
+\bottomrule
+\end{tabularx}
+\normalsize
+
+\section*{Examples of Key Prompts}
+
+The following are representative prompt summaries, rewritten concisely rather than copied as full transcripts:
+\begin{itemize}
+    \item ``Read this project folder and tell us what is still missing compared with the assignment description and proposal.''
+    \item ``The target paper is Spectral-GS. Plan how to implement the complete paper method in this codebase.''
+    \item ``Implement the plan on a new branch, add documentation, training commands, time estimates, and experiment design.''
+    \item ``Use the result folder and CSV to improve the report with GT, split ablation, entropy statistics, and qualitative zoom 4x figures.''
+    \item ``Revise the methodology figure using formulas from the paper/report, and mark implemented, approximated, and not fully implemented components.''
+    \item ``Check the teammate's pushed code and verify whether the method changed.''
+\end{itemize}
+
+\section*{Human Checks and Responsibility}
+
+The team remained responsible for the final technical content. AI suggestions were checked against the target paper, local source code, and measured experimental results. The final report does not claim a complete paper-level reproduction: it explicitly states that the 3D covariance spectral split is implemented, the 2D view-consistent filter is implemented as a scalar approximation, and the full matrix filter plus full 12-scene benchmark remain limitations.
+
+The numerical results in the report are based on the team's generated renders and CSV metric files. The qualitative figures are based on ground-truth images and rendered outputs prepared in the project result folder. AI was used to help organize and explain these artifacts, not to fabricate experimental results.
+
+\section*{Affected Artifacts}
+
+Key artifacts influenced by AI-assisted work include:
+\begin{itemize}
+    \item Source code for covariance spectral metrics, shape-aware splitting, scalar 2D filtering, zoom rendering, and metric export.
+    \item Reproduction documentation and training instructions.
+    \item The final report LaTeX file, including methodology, implementation, experiments, discussion, AI reflection, and figure captions.
+    \item The methodology mechanism figure and qualitative comparison figure.
+    \item This AI usage record.
+\end{itemize}
+
+\section*{Reflection Summary}
+
+Using AI tools improved learning mainly by helping the team map paper equations to concrete code locations: Gaussian scales and covariance metrics, densification and splitting, CUDA rasterizer filtering, and zoom evaluation. The most important lesson was that paper reproduction requires careful separation between implemented mechanisms, practical approximations, and missing paper-level components. The team therefore used AI assistance for acceleration and organization, but validated the final claims through source inspection, paper comparison, and measured results.
+
+\end{document}

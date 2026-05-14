@@ -15,3 +15,9 @@ SIBR_viewers/
 tools/
 viewers/
 *.egg-info/
+*.log
+*.pyd
+.DS_Store
+.Rhistory
+submodules/**/build/
+submodules/**/dist/
